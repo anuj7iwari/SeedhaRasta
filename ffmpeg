@@ -1,0 +1,38 @@
+import subprocess
+
+# --- CONFIGURATION ---
+FFMPEG_PATH = r"D:\FFMPEG\ffmpeg.exe"
+STREAM_KEY = "PASTE_YOUR_KEY_HERE"  # <--- Paste your Key inside quotes
+
+# --- SETTINGS (5 FPS, Silent Audio, RTMPS) ---
+URL = f"rtmps://a.rtmp.youtube.com:443/live2/{STREAM_KEY}"
+RESOLUTION = "1920x1080"
+FRAMERATE = "5"
+GOP = "10" # Keyframe interval (Must be 2x framerate)
+
+# --- THE COMMAND ---
+command = [
+    FFMPEG_PATH,
+    "-f", "gdigrab",
+    "-framerate", FRAMERATE,
+    "-video_size", RESOLUTION,
+    "-i", "desktop",
+    "-f", "lavfi", "-i", "anullsrc", # Dummy Audio
+    "-c:v", "libx264",
+    "-preset", "ultrafast",
+    "-tune", "zerolatency",
+    "-b:v", "2500k",
+    "-c:a", "aac",
+    "-b:a", "128k",
+    "-pix_fmt", "yuv420p",
+    "-g", GOP,
+    "-f", "flv",
+    URL
+]
+
+# --- RUN INVISIBLE ---
+# The magic flag: 0x08000000 (CREATE_NO_WINDOW)
+# This tells Windows: "Run this process, but do not give it a console window."
+subprocess.Popen(command, creationflags=0x08000000)
+
+#2c88-55w5-b0tg-uwfj-6sd6
